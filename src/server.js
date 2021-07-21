@@ -3,6 +3,8 @@ const cors = require('cors');
 
 const app = express();
 
+const search = require("./routes/search")
+
 app.use(cors({ origin: true }));
 app.use(express.json());
 
@@ -15,9 +17,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", (req, res) => {
-  res.send("Hello World!")
-})
+// app.use("/", (req, res) => {
+//   res.send("Hello World!")
+// })
+
+app.use("/api/search", search);
 
 
 
