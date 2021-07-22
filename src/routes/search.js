@@ -4,7 +4,7 @@ const axios = require("axios");
 const router = express.Router();
 const URL = "https://api.yelp.com/v3/businesses/search";
 const API_KEY = "grd9edPIdc08b6nHwZNAPEEXk9dqwUITumOk1Pz-2YZDeKt2kd1iCZNIyjKG5-3q6WCFn4iFt9A2VmZ1dpbwr-3kKaAaoSsI84OUhxBmfTlae1rK2SFsH2YiADX2YHYx"
-const LIMIT =10;
+
 const roundAccurately = (number, decimalPlaces) => {
   return Number(Math.round(number + "e" + decimalPlaces) + "e-" + decimalPlaces);
 }
@@ -15,7 +15,14 @@ router.get("/", async (req, res) => {
   const location = req.query.location;
   const pageNumber = parseInt(req.query.pageNumber);
   const total = parseInt(req.query.total);
-  const start = (total - (((pageNumber + 1) - 1) * LIMIT));
+  let LIMIT =10;
+  let start = (total - (((pageNumber + 1) - 1) * LIMIT));
+
+  if (start < 0) {
+    const diff = start + LIMIT;
+    LIMIT = diff;
+    start = 1;
+  }
 
   try {
     const response = await axios({
@@ -37,7 +44,7 @@ router.get("/", async (req, res) => {
     const updatedResults = response.data.businesses.map(business => {
       const score = (business.review_count * business.rating) / (business.review_count + 1);
       const roundedScore = roundAccurately(score, 1);
-      const updatedBusiness = { ...business, rating: roundedScore };
+      const updatedBusiness = { ...business, rating: roundedScore, startIndex: start };
       return updatedBusiness;
     })
 
