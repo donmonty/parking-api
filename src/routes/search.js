@@ -4,7 +4,7 @@ const Response = require("../network/response");
 
 const router = express.Router();
 const URL = "https://api.yelp.com/v3/businesses/search";
-const API_KEY = "grd9edPIdc08b6nHwZNAPEEXk9dqwUITumOk1Pz-2YZDeKt2kd1iCZNIyjKG5-3q6WCFn4iFt9A2VmZ1dpbwr-3kKaAaoSsI84OUhxBmfTlae1rK2SFsH2YiADX2YHYx"
+const API_KEY = process.env.API_KEY;
 
 const roundAccurately = (number, decimalPlaces) => {
   return Number(Math.round(number + "e" + decimalPlaces) + "e-" + decimalPlaces);
