@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const Response = require("../network/response");
 
 const router = express.Router();
 const URL = "https://api.yelp.com/v3/businesses/search";
@@ -10,7 +11,6 @@ const roundAccurately = (number, decimalPlaces) => {
 }
 
 // ROUTES
-
 router.get("/", async (req, res) => {
   const location = req.query.location;
   const pageNumber = parseInt(req.query.pageNumber);
@@ -52,9 +52,11 @@ router.get("/", async (req, res) => {
       return a.rating - b.rating;
     })
 
-    return res.status(200).json({ businesses: sortedResults })
+    return Response.success(req, res, sortedResults);
+    //return res.status(200).json({ businesses: sortedResults })
   } catch (error) {
-    console.log(error);
+    if (error.message === "Request failed with status code 400") return Response.error(req, res, "LOCATION_NOT_FOUND", 400);
+    return Response.error(req, res, error.message);
   }
 })
 
@@ -76,9 +78,12 @@ router.get("/total", async (req, res) => {
         "Content-type": "application/json"
       }
     });
-    return res.status(200).json({ total: response.data.total });
+
+    return Response.success(req, res, response.data.total)
+
   } catch (error) {
-    console.log(error);
+    if (error.message === "Request failed with status code 400") return Response.error(req, res, "LOCATION_NOT_FOUND", 400);
+    return Response.error(req, res, error.message);
   }
   
 })
